@@ -28,8 +28,43 @@
  
     map.setCenter(center, zoom);
 
-    var markers = new OpenLayers.Layer.Markers( "Markers" );
-    map.addLayer(markers);
-    markers.addMarker(new OpenLayers.Marker(position));
+    var vectorLayer = new OpenLayers.Layer.Vector("Overlay");
+
+    var feature = new OpenLayers.Feature.Vector(
+    new OpenLayers.Geometry.Point(poi[0]['lon'], poi[0]['lat']).transform(fromProjection, toProjection),
+    {description:'101 觀景臺'} ,
+    {externalGraphic: 'OpenLayers-2.13.1/img/marker.png', graphicHeight: 25, graphicWidth: 21, graphicXOffset:-12, graphicYOffset:-25  }
+    ); 
+
+    vectorLayer.addFeatures(feature);
+
+    map.addLayer(vectorLayer);
+
+
+    //Add a selector control to the vectorLayer with popup functions
+    var controls = {
+	    selector: new OpenLayers.Control.SelectFeature(vectorLayer, { onSelect: createPopup, onUnselect: destroyPopup })
+    };
+
+    function createPopup(feature) {
+	    feature.popup = new OpenLayers.Popup.FramedCloud("pop",
+	    feature.geometry.getBounds().getCenterLonLat(),
+	    null,
+	    '<div class="markerContent">'+feature.attributes.description+'</div>',
+	    null,
+	    true,
+	    function() { controls['selector'].unselectAll(); }
+	    );
+	    //feature.popup.closeOnMove = true;
+	    map.addPopup(feature.popup);
+    }
+
+    function destroyPopup(feature) {
+	    feature.popup.destroy();
+	    feature.popup = null;
+    }
+
+    map.addControl(controls['selector']);
+    controls['selector'].activate();
 </script>
 </body>
