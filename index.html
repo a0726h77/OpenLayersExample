@@ -11,15 +11,25 @@
     var lat            = 25.033136;
     var lon            = 121.562476;
     var zoom           = 16;
+
+    var poi = new Array();
+    poi[0] = new Array();
+    poi[0]['lat'] = 25.032981;
+    poi[0]['lon'] = 121.564794;
  
     var fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
     var toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
     var center         = new OpenLayers.LonLat(lon, lat).transform( fromProjection, toProjection);
+    var position       = new OpenLayers.LonLat(poi[0]['lon'], poi[0]['lat']).transform( fromProjection, toProjection);
  
     map = new OpenLayers.Map("Map");
     var mapnik         = new OpenLayers.Layer.OSM();
     map.addLayer(mapnik);
  
     map.setCenter(center, zoom);
+
+    var markers = new OpenLayers.Layer.Markers( "Markers" );
+    map.addLayer(markers);
+    markers.addMarker(new OpenLayers.Marker(position));
 </script>
 </body>
